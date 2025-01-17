@@ -15,6 +15,8 @@ interface LetterMap {
 export default function Home() {
   const [tree, setTree] = useState<null | TreeNode>(null);
   const [input, setInput] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const [result, setResult] = useState<string[]>([]);
 
   useEffect(() => {
     const createTree = async () => {
@@ -73,13 +75,22 @@ export default function Home() {
     }
     findWord(tree as TreeNode, '', input);
     candidates.sort((a, b) => a.length < b.length ? -1 : 1);
-    console.log('candidates', candidates);
+    setResult(candidates);
+    setSubmitted(true);
   }
+
+  const othersString = result.slice(1, 10).join(', ');
 
   return (
     <div className="">
       <input className="m-3 border-box" type="text" value={input} onChange={e => setInput(e.target.value)}></input>
       <button onClick={calcWords}>Submit</button>
+      {submitted && result.length > 0 && <div>
+        The best word is {result[0]}. Other good words are {othersString}.
+      </div>}
+      {submitted && !result.length && <div>
+        No words match this letter combination.
+      </div>}
     </div>
   );
 }
